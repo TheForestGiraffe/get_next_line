@@ -6,7 +6,7 @@
 /*   By: pecavalc <pecavalc@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 01:12:01 by pecavalc          #+#    #+#             */
-/*   Updated: 2025/06/22 06:49:51 by pecavalc         ###   ########.fr       */
+/*   Updated: 2025/06/23 05:06:49 by pecavalc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,18 +21,26 @@ char	*get_next_line(int fd)
 	t_gnl_node			*node;
 	char				*line;
 
+	line = NULL;
+	if ((BUFFER_SIZE < 1) || (fd < 0))
+		return (NULL);
 	node = search_or_add_node_front(&lst_head, fd);
 	if (!node)
 		return (NULL);
-	line = NULL;
-	next_line(&node->file, &line);
-	if ((!line) || (node->file.error_flag == -1))
+	if (read(fd, NULL, 0) < 0)
 	{
 		delete_node(&lst_head, node);
 		return (NULL);
 	}
-	else if (!line)
+	next_line(&node->file, &line);
+	if (!line || node->file.bytes_read == -1)
+	{
+		delete_node(&lst_head, node);
+		free(line);
 		return (NULL);
+	}
+	if (node->file.bytes_read == 0 && node->file.position == 0)
+		delete_node(&lst_head, node);
 	return (line);
 }
 
@@ -49,7 +57,7 @@ void	next_line(t_gnl_file *file, char **line)
 	{
 		if (position >= length)
 		{
-			*line = realloc_line(file, *line, &length);
+			realloc_line(line, &length);
 			if (!*line)
 				return ;
 		}
@@ -75,58 +83,53 @@ void	last_line(size_t *position, char **line)
 	}
 }
 
-char	*realloc_line(t_gnl_file *file, char *line, size_t *length)
+void	realloc_line(char **line, size_t *length)
 {
 	char	*new_line;
 	size_t	size;
 
 	if (*length == 0)
 	{
-		if (BUFFER_SIZE < 2)
-			size = 2;
-		else
-			size = BUFFER_SIZE + 1;
+		size = BUFFER_SIZE + 1;
 	}
 	else
+	{
 		size = (*length * 2 + 1);
+	}
 	new_line = (char *)malloc(size);
 	if (!new_line)
 	{
-		file->error_flag = -1;
-		return (NULL);
+		free(*line);
+		*line = NULL;
+		return ;
 	}
-	if (line)
+	if (*line)
 	{
-		ft_memcpy(new_line, line, *length);
-		free(line);
+		ft_memcpy(new_line, *line, *length);
+		free(*line);
 	}
+	*line = new_line;
 	*length = size -1;
-	return (new_line);
 }
 
 char	*next_char(t_gnl_file *file)
 {
 	char	*c;
 
-	if (BUFFER_SIZE < 1)
-		return (NULL);
 	if (!file->buffer)
 		file->buffer = (char *)malloc(BUFFER_SIZE);
 	if (!file->buffer)
 		return (NULL);
-	if (file->position >= file->nr_bytes_read)
+	if (file->position >= file->bytes_read)
 	{
 		file->position = 0;
-		file->nr_bytes_read = read(file->fd, file->buffer, BUFFER_SIZE);
-		if (file->nr_bytes_read == -1)
+		file->bytes_read = read(file->fd, file->buffer, BUFFER_SIZE);
+		if (file->bytes_read == -1 || file->bytes_read == 0)
 		{
-			file->error_flag = -1;
 			free(file->buffer);
 			file->buffer = NULL;
 			return (NULL);
 		}
-		if (file->nr_bytes_read == 0)
-			return (NULL);
 	}
 	c = &file->buffer[file->position];
 	file->position++;

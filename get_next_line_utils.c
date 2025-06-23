@@ -6,21 +6,18 @@
 /*   By: pecavalc <pecavalc@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 01:12:01 by pecavalc          #+#    #+#             */
-/*   Updated: 2025/06/22 06:09:45 by pecavalc         ###   ########.fr       */
+/*   Updated: 2025/06/23 04:59:53 by pecavalc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
-#include "get_next_line.h"
 #include <unistd.h>
-#include <stdio.h>
+#include "get_next_line.h"
 
 t_gnl_node	*search_or_add_node_front(t_gnl_node **lst_head, int fd)
 {
 	t_gnl_node			*node;
 
-	if (fd < 0)
-		return (NULL);
 	node = *lst_head;
 	while (node)
 	{
@@ -34,8 +31,7 @@ t_gnl_node	*search_or_add_node_front(t_gnl_node **lst_head, int fd)
 	node->file.fd = fd;
 	node->file.buffer = NULL;
 	node->file.position = 0;
-	node->file.nr_bytes_read = 0;
-	node->file.error_flag = 1;
+	node->file.bytes_read = 0;
 	node->previous = NULL;
 	node->next = *lst_head;
 	if (*lst_head)
@@ -46,20 +42,21 @@ t_gnl_node	*search_or_add_node_front(t_gnl_node **lst_head, int fd)
 
 void	delete_node(t_gnl_node **lst_head, t_gnl_node *node)
 {
-	if (!node)
+	if (!node || !lst_head)
 		return ;
-	if (node->previous != NULL)
-		node->previous->next = node->next;
-	else
+	if (*lst_head == node)
 		*lst_head = node->next;
-	if (node->next != NULL)
+	if (node->previous)
+		node->previous->next = node->next;
+	if (node->next)
 		node->next->previous = node->previous;
-	if (node->file.buffer != NULL)
+	if (node->file.buffer)
 	{
 		free (node->file.buffer);
 		node->file.buffer = NULL;
 	}
 	free(node);
+	node = NULL;
 }
 
 void	*ft_memcpy(void *dst, const void *src, size_t n)

@@ -6,7 +6,7 @@
 /*   By: pecavalc <pecavalc@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 12:14:43 by pecavalc          #+#    #+#             */
-/*   Updated: 2025/06/22 06:25:28 by pecavalc         ###   ########.fr       */
+/*   Updated: 2025/06/23 02:34:28 by pecavalc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,7 @@ typedef struct s_file {
 	int				fd;
 	char			*buffer;
 	ssize_t			position;
-	ssize_t			nr_bytes_read;
-	int				error_flag;
+	ssize_t			bytes_read;
 }					t_gnl_file;
 
 typedef struct s_node {
@@ -36,7 +35,7 @@ typedef struct s_node {
 char		*get_next_line(int fd);
 void		next_line(t_gnl_file *file, char **line);
 char		*next_char(t_gnl_file *file);
-char		*realloc_line(t_gnl_file *file, char *line, size_t *length);
+void		realloc_line(char **line, size_t *length);
 void		last_line(size_t *position, char **line);
 
 // Utils

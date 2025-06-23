@@ -1,26 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pecavalc <pecavalc@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 01:12:01 by pecavalc          #+#    #+#             */
-/*   Updated: 2025/06/22 04:51:40 by pecavalc         ###   ########.fr       */
+/*   Updated: 2025/06/23 02:35:39 by pecavalc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 #include <unistd.h>
-#include <stdio.h>
 
 t_gnl_node	*search_or_add_node_front(t_gnl_node **lst_head, int fd)
 {
 	t_gnl_node			*node;
 
-	if (fd < 0)
-		return (NULL);
 	node = *lst_head;
 	while (node)
 	{
@@ -34,7 +31,7 @@ t_gnl_node	*search_or_add_node_front(t_gnl_node **lst_head, int fd)
 	node->file.fd = fd;
 	node->file.buffer = NULL;
 	node->file.position = 0;
-	node->file.nr_bytes_read = 0;
+	node->file.bytes_read = 0;
 	node->previous = NULL;
 	node->next = *lst_head;
 	if (*lst_head)
