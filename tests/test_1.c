@@ -12,7 +12,7 @@ int	main(void)
 	int		c;
 	
 	c = 1;
-	fd = open("test_files/1char.txt", O_RDONLY);
+	fd = open("text_files/1char.txt", O_RDONLY);
 	printf("fd: %i\n", fd);
 	if (fd < 0)
 	{

@@ -11,9 +11,9 @@ int	main(void)
 	int		fd_4;
 	char	*line;
 	
-	fd_1 = open("code.c", O_RDONLY);
-	fd_2 = open("empty", O_RDONLY);
-	fd_4 = open("lorem.txt", O_RDONLY);
+	fd_1 = open("text_files/1char.c", O_RDONLY);
+	fd_2 = open("text_files/empty", O_RDONLY);
+	fd_4 = open("text_files/lorem.txt", O_RDONLY);
 
 	if ((fd_1 < 0) || (fd_2 < 0) || (fd_4 < 0))
 	{
